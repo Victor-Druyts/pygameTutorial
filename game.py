@@ -1,7 +1,11 @@
 import pygame
 import os
+import xlwings as xw
 pygame.font.init()
 pygame.mixer.init()
+
+wb = xw.Book('scores.xls')
+sheet = wb.sheets('scores')
 
 WIDTH, HEIGHT = 900, 500
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -47,14 +51,13 @@ def draw_window(red, yellow, red_bullets, yellow_bullets , red_health, yellow_he
     WIN.blit(red_health_text, (WIDTH - red_health_text.get_width() - 10, 10))
     WIN.blit(yellow_health_text, (10, 10))
 
-    red_score_text = SCORE_FONT.render("Score" + str(red_score), 1, WHITE)
-    yellow_score_text = SCORE_FONT.render("Score" + str(yellow_score), 1, WHITE)
+    red_score_text = SCORE_FONT.render("Score " + str(red_score), 1, WHITE)
+    yellow_score_text = SCORE_FONT.render("Score " + str(yellow_score), 1, WHITE)
     WIN.blit(red_score_text, (WIDTH - red_score_text.get_width()- 10, 60))
     WIN.blit(yellow_score_text, (10, 60))
 
     WIN.blit(YELLOW_SPACESHIP, (yellow.x, yellow.y))
     WIN.blit(RED_SPACESHIP, (red.x, red.y))
-
 
     for bullet in red_bullets:
         pygame.draw.rect(WIN, RED, bullet)
@@ -107,6 +110,7 @@ def draw_winner(text):
     pygame.display.update()
     pygame.time.delay(5000)
 
+
 def main():
     red = pygame.Rect(700, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
     yellow = pygame.Rect(100, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
@@ -117,9 +121,8 @@ def main():
     red_health = 10
     yellow_health = 10
 
-    #TODO Zet de score in een csv bestand zodat je kunt blijven upgraden.    
-    red_score = 0
-    yellow_score = 0
+    red_score = sheet['B1'].value
+    yellow_score = sheet['B2'].value
     
     clock = pygame.time.Clock()
     run = True
@@ -128,6 +131,10 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+                sheet['B1'].value = 0
+                sheet['B2'].value = 0
+                wb.save()
+                wb.close()
                 pygame.quit()
 
             if event.type == pygame.KEYDOWN:
@@ -152,11 +159,10 @@ def main():
         winner_text = ""
         if red_health <= 0:
             winner_text = "Yellow Wins!"
-            yellow_score + 1
-        #TODO Zorg ervoor dat er bij de score in het csv bestand telkens 1 bij komt.
+            sheet['B2'].value += 1
         if yellow_health <= 0:
             winner_text = "Red Wins!"
-            yellow_score + 1
+            sheet['B1'].value += 1
         
         if winner_text != "":
             draw_winner(winner_text)
