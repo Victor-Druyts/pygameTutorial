@@ -19,6 +19,7 @@ BULLET_FIRE_SOUND = pygame.mixer.Sound(os.path.join('Assets', 'Shoot.mp3'))
 
 HEALTH_FONT = pygame.font.SysFont('comicsans',40)
 WINNER_FONT = pygame.font.SysFont('comicsans', 100)
+SCORE_FONT = pygame.font.SysFont('comicsans', 20)
 
 FPS = 60
 VEL = 5
@@ -37,7 +38,7 @@ RED_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(RED_SPACESHIP_IMA
 
 SPACE = pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'space.png')), (WIDTH, HEIGHT))
 
-def draw_window(red, yellow, red_bullets, yellow_bullets , red_health, yellow_health):
+def draw_window(red, yellow, red_bullets, yellow_bullets , red_health, yellow_health, red_score, yellow_score):
     WIN.blit(SPACE, (0, 0))
     pygame.draw.rect(WIN, BLACK, BORDER)
 
@@ -45,6 +46,11 @@ def draw_window(red, yellow, red_bullets, yellow_bullets , red_health, yellow_he
     yellow_health_text = HEALTH_FONT.render("Health: " + str(yellow_health), 1, YELLOW)
     WIN.blit(red_health_text, (WIDTH - red_health_text.get_width() - 10, 10))
     WIN.blit(yellow_health_text, (10, 10))
+
+    red_score_text = SCORE_FONT.render("Score" + str(red_score), 1, WHITE)
+    yellow_score_text = SCORE_FONT.render("Score" + str(yellow_score), 1, WHITE)
+    WIN.blit(red_score_text, (WIDTH - red_score_text.get_width()- 10, 60))
+    WIN.blit(yellow_score_text, (10, 60))
 
     WIN.blit(YELLOW_SPACESHIP, (yellow.x, yellow.y))
     WIN.blit(RED_SPACESHIP, (red.x, red.y))
@@ -110,6 +116,10 @@ def main():
 
     red_health = 10
     yellow_health = 10
+
+    #TODO Zet de score in een csv bestand zodat je kunt blijven upgraden.    
+    red_score = 0
+    yellow_score = 0
     
     clock = pygame.time.Clock()
     run = True
@@ -142,9 +152,11 @@ def main():
         winner_text = ""
         if red_health <= 0:
             winner_text = "Yellow Wins!"
-
+            yellow_score + 1
+        #TODO Zorg ervoor dat er bij de score in het csv bestand telkens 1 bij komt.
         if yellow_health <= 0:
             winner_text = "Red Wins!"
+            yellow_score + 1
         
         if winner_text != "":
             draw_winner(winner_text)
@@ -156,7 +168,7 @@ def main():
 
         handle_bullets(yellow_bullets, red_bullets, yellow, red)
 
-        draw_window(red, yellow, red_bullets, yellow_bullets, red_health, yellow_health)
+        draw_window(red, yellow, red_bullets, yellow_bullets, red_health, yellow_health, red_score, yellow_score)
         
     main()
 
