@@ -42,6 +42,8 @@ RED_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(RED_SPACESHIP_IMA
 
 SPACE = pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'space.png')), (WIDTH, HEIGHT))
 
+BULLET_UPGRADE_BUTTON_IMG = pygame.image.load(os.path.join('Assets', 'bulletUpgrades.png'))
+
 def draw_window(red, yellow, red_bullets, yellow_bullets , red_health, yellow_health, red_score, yellow_score):
     WIN.blit(SPACE, (0, 0))
     pygame.draw.rect(WIN, BLACK, BORDER)
@@ -64,6 +66,8 @@ def draw_window(red, yellow, red_bullets, yellow_bullets , red_health, yellow_he
 
     for bullet in yellow_bullets:
         pygame.draw.rect(WIN, YELLOW, bullet)
+
+    WIN.blit(BULLET_UPGRADE_BUTTON_IMG, (WIDTH / 2 + 30, 5))
 
     pygame.display.update()
 
