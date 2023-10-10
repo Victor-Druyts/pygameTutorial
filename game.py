@@ -18,6 +18,9 @@ YELLOW = (255, 255, 0)
 
 BORDER = pygame.Rect(WIDTH//2-5, 0, 10, HEIGHT)
 
+BUTTON_BULLETS_RED = pygame.Rect(WIDTH / 2 + 30, 5, 64, 64)
+BUTTON_BULLETS_YELLOW = pygame.Rect(WIDTH / 2 - 96, 5, 64, 64)
+
 BULLET_HIT_SOUND = pygame.mixer.Sound(os.path.join('Assets', 'explosion.mp3'))
 BULLET_FIRE_SOUND = pygame.mixer.Sound(os.path.join('Assets', 'Shoot.mp3'))
 
@@ -28,7 +31,8 @@ SCORE_FONT = pygame.font.SysFont('comicsans', 20)
 FPS = 60
 VEL = 5
 BULLETS_VEL = 7
-MAX_BULLETS = 3
+MAX_BULLET_RED = 3
+MAX_BULLET_YELLOW = 3
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 55, 40
 
 YELLOW_HIT = pygame.USEREVENT + 1
@@ -68,6 +72,7 @@ def draw_window(red, yellow, red_bullets, yellow_bullets , red_health, yellow_he
         pygame.draw.rect(WIN, YELLOW, bullet)
 
     WIN.blit(BULLET_UPGRADE_BUTTON_IMG, (WIDTH / 2 + 30, 5))
+    WIN.blit(BULLET_UPGRADE_BUTTON_IMG, (WIDTH / 2 - 96, 5))
 
     pygame.display.update()
 
@@ -122,6 +127,9 @@ def main():
     red_bullets = []
     yellow_bullets = []
 
+    bullet_upgrade_red = []
+    bullet_upgrade_yellow = []
+
     red_health = 10
     yellow_health = 10
 
@@ -130,6 +138,8 @@ def main():
     
     clock = pygame.time.Clock()
     run = True
+    hovered_red = False
+    hovered_yellow = False
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -140,14 +150,40 @@ def main():
                 wb.save()
                 wb.close()
                 pygame.quit()
+            elif event.type == pygame.MOUSEMOTION:
+                if BUTTON_BULLETS_RED.collidepoint(event.pos):
+                    hovered_red = True
+                    hovered_yellow = False
+                elif BUTTON_BULLETS_YELLOW.collidepoint(event.pos):
+                    hovered_yellow = True
+                    hovered_red = False
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if red_score == 5:
+                    if hovered_red:
+                        print("Geklikt")
+                        red_score = sheet['B1'].value - 5
+                        bullet_upgrade_red.append()
+                        wb.save()
+                elif red_score <= 5:
+                    if hovered_red:
+                        print("Niet genoeg")
+                if yellow_score == 5:
+                    if hovered_yellow:
+                        print("Geklikt")
+                        yellow_score = sheet['B2'].value - 5
+                        bullet_upgrade_red.append()
+                        wb.save()
+                elif yellow_score <= 5:
+                    if hovered_yellow:
+                        print("Niet genoeg")
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LCTRL and len(yellow_bullets) < MAX_BULLETS:
+                if event.key == pygame.K_LCTRL and len(yellow_bullets) < MAX_BULLET_YELLOW + bullet_upgrade_yellow:
                     bullet = pygame.Rect(yellow.x + yellow.width, yellow.y + yellow.height//2 - 2, 10, 5)
                     yellow_bullets.append(bullet)
                     BULLET_FIRE_SOUND.play()
-
-                if event.key == pygame.K_RCTRL and len(red_bullets) < MAX_BULLETS:
+                #TODO Zorg ervoor dat je het max aantal bullets kan omhoog doen met de upgrade.
+                if event.key == pygame.K_RCTRL and len(red_bullets) < MAX_BULLET_RED + bullet_upgrade_red:
                     bullet = pygame.Rect(red.x, red.y + red.height//2 - 2, 10, 5)
                     red_bullets.append(bullet)
                     BULLET_FIRE_SOUND.play()
